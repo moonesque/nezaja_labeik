@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="nezaja_labeik"
+        android:label="طرح لبیک نزاجا"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
