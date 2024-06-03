@@ -82,12 +82,29 @@ class _HomePageState extends State<HomePage> {
                             alignment: Alignment.centerRight,
                             child: Padding(
                               padding: EdgeInsets.only(right: 16),
-                              child: Text(
-                                'لبیک یا امام خامنه ای (مدظله العالی)',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors
+                                      .black54, // Semi-transparent background
+                                  borderRadius: BorderRadius.circular(
+                                      10), // Rounded corners
+                                ),
+                                child: Text(
+                                  'لبیک یا امام خامنه ای (مدظله العالی)',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold,
+                                    shadows: [
+                                      Shadow(
+                                        blurRadius: 10.0,
+                                        color: Colors.black,
+                                        offset: Offset(2.0, 2.0),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -122,7 +139,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 margin: EdgeInsets.all(6), // Margin around the tile
                 child: ListTile(
-                  title: Text('لبیک ${formatNumber(index + 1)}'),
+                  title: Text('لبیک ${formatNumber(index + 1)}',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -142,8 +160,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-
-
 class DetailPage extends StatefulWidget {
   final int entryNumber;
 
@@ -161,7 +177,7 @@ class _DetailPageState extends State<DetailPage>
   @override
   void initState() {
     super.initState();
-    _countdownNotifier = ValueNotifier<int>(5);
+    _countdownNotifier = ValueNotifier<int>(10);
     _startCountdown();
   }
 
@@ -206,7 +222,7 @@ class _DetailPageState extends State<DetailPage>
 
   void _resetCountdown() {
     _timer?.cancel();
-    _countdownNotifier.value = 5; // Reset countdown
+    _countdownNotifier.value = 10; // Reset countdown
     _startCountdown();
   }
 
@@ -234,6 +250,8 @@ class _DetailPageState extends State<DetailPage>
           return Scaffold(
             appBar: AppBar(
               title: Text('لبیک $formattedNumber'),
+              backgroundColor:
+                  Colors.greenAccent, // Set the background color here
             ),
             body: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -242,19 +260,37 @@ class _DetailPageState extends State<DetailPage>
                 children: [
                   Image.asset(imageUrl),
                   SizedBox(height: 20),
-                  Text(
-                    '«${shortInfo["${widget.entryNumber}"]["name"]}»',
-                    style: TextStyle(
+                  Container(
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: Colors.grey
+                          .withOpacity(0.7), // Semi-transparent gray background
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
+                    ),
+                    child: Text(
+                      '«${shortInfo["${widget.entryNumber}"]["name"]}»',
+                      style: TextStyle(
                         fontSize: 22,
-                        decorationThickness: 6,
-                        fontWeight: FontWeight.bold),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                  Text(
-                    '${shortInfo["${widget.entryNumber}"]["short_text"]}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                      decorationThickness: 6,
+                  SizedBox(height: 10), // Add some space between the texts
+                  Container(
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: Colors.grey
+                          .withOpacity(0.7), // Semi-transparent gray background
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
+                    ),
+                    child: Text(
+                      '${shortInfo["${widget.entryNumber}"]["short_text"]}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                      ),
                     ),
                   ),
                   SizedBox(height: 20),
@@ -269,8 +305,8 @@ class _DetailPageState extends State<DetailPage>
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                       ),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.blue),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.greenAccent), // Changed to greenAccent
                       elevation: MaterialStateProperty.all<double>(10.0),
                       shadowColor:
                           MaterialStateProperty.all<Color>(Colors.black54),
@@ -281,7 +317,10 @@ class _DetailPageState extends State<DetailPage>
                     child: Ink(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Colors.blueAccent, Colors.lightBlueAccent],
+                          colors: [
+                            Colors.greenAccent,
+                            Colors.white24
+                          ], // Changed to green gradient
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
@@ -294,7 +333,7 @@ class _DetailPageState extends State<DetailPage>
                           builder: (context, countdownValue, child) {
                             return Text(
                               'مطالعه (${formatNumber(countdownValue)})',
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(color: Colors.black),
                             );
                           },
                         ),
@@ -324,8 +363,7 @@ class FullDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Full Detail Page'),
-      ),
+          title: Text('Full Detail Page'), backgroundColor: Colors.greenAccent),
       body: Center(
         child: Text('Entry Number: $entryNumber'),
       ),
