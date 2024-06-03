@@ -12,7 +12,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -27,21 +26,6 @@ class MyApp extends StatelessWidget {
         Locale('en'),
       ],
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent),
         useMaterial3: true,
       ),
@@ -69,85 +53,182 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    final double statusBarHeight = MediaQuery.of(context).padding.top;
+
     return Scaffold(
       appBar: PreferredSize(
-          preferredSize: Size.fromHeight(kToolbarHeight),
-          child: AppBar(
-              title: Text(
-                'لبیک یا امام خامنه ای (مدظله العالی)',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18.0,
+        preferredSize: Size.fromHeight(200),
+        child: AppBar(
+          automaticallyImplyLeading: false,
+          flexibleSpace: Column(
+            children: [
+              SizedBox(height: statusBarHeight), // Reserve space for status bar
+              Expanded(
+                child: ClipRRect(
+                  borderRadius:
+                      BorderRadius.vertical(bottom: Radius.circular(30.0)),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Image.asset(
+                          'assets/images/cropped_supreme.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Center(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 0), // No offset needed
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Padding(
+                              padding: EdgeInsets.only(right: 16),
+                              child: Text(
+                                'لبیک یا امام خامنه ای (مدظله العالی)',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              flexibleSpace: SafeArea(
-                  child: Image(
-                image: AssetImage('assets/images/cropped_supreme.jpg'),
-                fit: BoxFit.cover,
-              )))),
-      body: Stack(children: [
-        Center(
+            ],
+          ),
+        ),
+      ),
+      body: Stack(
+        children: [
+          Center(
             child: Image.asset(
-          'assets/images/ic_launcher_foreground.png', // Replace with your image asset path
-          fit: BoxFit.scaleDown,
-          // width: MediaQuery.of(context).size.width,
-          // height: MediaQuery.of(context).size.height,
-        )),
-        ListView.builder(
-          itemCount: 11,
-          itemBuilder: (context, index) {
-            return Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[200]!
-                    .withOpacity(0.7), // Slightly gray background color
-                borderRadius: BorderRadius.circular(5), // Rounded corners
-                border: Border.all(color: Colors.grey), // Border outline
-              ),
-              margin: EdgeInsets.all(6), // Margin around the tile
-              child: ListTile(
-                title: Text('لبیک ${formatNumber(index + 1)}'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DetailPage(entryNumber: index + 1),
-                    ),
-                  );
-                },
-              ),
-            );
-          },
-        )
-      ]),
+              'assets/images/ic_launcher_foreground.png', // Replace with your image asset path
+              fit: BoxFit.scaleDown,
+            ),
+          ),
+          ListView.builder(
+            itemCount: 11,
+            itemBuilder: (context, index) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200]!
+                      .withOpacity(0.7), // Slightly gray background color
+                  borderRadius: BorderRadius.circular(5), // Rounded corners
+                  border: Border.all(color: Colors.grey), // Border outline
+                ),
+                margin: EdgeInsets.all(6), // Margin around the tile
+                child: ListTile(
+                  title: Text('لبیک ${formatNumber(index + 1)}'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DetailPage(entryNumber: index + 1),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
 
-// This widget is the home page of your application. It is stateful, meaning
-// that it has a State object (defined below) that contains fields that affect
-// how it looks.
 
-// This class is the configuration for the state. It holds the values (in this
-// case the title) provided by the parent (in this case the App widget) and
-// used by the build method of the State. Fields in a Widget subclass are
-// always marked "final".
 
-class DetailPage extends StatelessWidget {
+class DetailPage extends StatefulWidget {
   final int entryNumber;
 
   DetailPage({required this.entryNumber});
 
   @override
+  _DetailPageState createState() => _DetailPageState();
+}
+
+class _DetailPageState extends State<DetailPage>
+    with SingleTickerProviderStateMixin {
+  late ValueNotifier<int> _countdownNotifier;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _countdownNotifier = ValueNotifier<int>(5);
+    _startCountdown();
+  }
+
+  void _startCountdown() {
+    _timer?.cancel();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_countdownNotifier.value > 0) {
+        _countdownNotifier.value--;
+      } else {
+        timer.cancel();
+        _navigate();
+      }
+    });
+  }
+
+  void _navigate() {
+    _timer?.cancel(); // Cancel any ongoing timer
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        transitionDuration: Duration(seconds: 1),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            FullDetailPage(entryNumber: widget.entryNumber),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          var begin = Offset(-1.0, 0.0); // Slide in from the left
+          var end = Offset.zero;
+          var curve = Curves.easeInOut;
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
+
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
+      ),
+    ).then((value) {
+      _resetCountdown(); // Reset countdown when coming back
+    });
+  }
+
+  void _resetCountdown() {
+    _timer?.cancel();
+    _countdownNotifier.value = 5; // Reset countdown
+    _startCountdown();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _countdownNotifier.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    String formattedNumber = formatNumber(entryNumber);
-    String textContent = 'لبیک $formattedNumber';
+    String formattedNumber = formatNumber(widget.entryNumber);
     String imageUrl = 'assets/images/salute_supreme_air.jpg';
 
     return FutureBuilder(
       future: loadJsonData(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         } else if (snapshot.connectionState == ConnectionState.done) {
           Map<String, dynamic> shortInfo = jsonDecode(snapshot.data.toString());
           return Scaffold(
@@ -162,32 +243,72 @@ class DetailPage extends StatelessWidget {
                   Image.asset(imageUrl),
                   SizedBox(height: 20),
                   Text(
-                    '«${shortInfo["$entryNumber"]["name"]}»',
-                    style: TextStyle(fontSize: 22, decorationThickness: 6, fontWeight: FontWeight.bold),
+                    '«${shortInfo["${widget.entryNumber}"]["name"]}»',
+                    style: TextStyle(
+                        fontSize: 22,
+                        decorationThickness: 6,
+                        fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    '${shortInfo["$entryNumber"]["short_text"]}',
+                    '${shortInfo["${widget.entryNumber}"]["short_text"]}',
                     style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24,
-                        decorationThickness: 6,
-                  )),
-                  MaterialButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => FullDetailPage(entryNumber: entryNumber)),
-                      );
-                    },
-                    child: Text('مطالعه', style: TextStyle(fontSize: 20),),
-                  )
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      decorationThickness: 6,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _navigate,
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.all<EdgeInsets>(
+                        EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                      ),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      ),
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.blue),
+                      elevation: MaterialStateProperty.all<double>(10.0),
+                      shadowColor:
+                          MaterialStateProperty.all<Color>(Colors.black54),
+                      textStyle: MaterialStateProperty.all<TextStyle>(
+                        TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.blueAccent, Colors.lightBlueAccent],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: ValueListenableBuilder<int>(
+                          valueListenable: _countdownNotifier,
+                          builder: (context, countdownValue, child) {
+                            return Text(
+                              'مطالعه (${formatNumber(countdownValue)})',
+                              style: TextStyle(color: Colors.white),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           );
         } else {
-          return Text('Error loading data');
+          return Scaffold(
+            body: Center(child: Text('Error loading data')),
+          );
         }
       },
     );
