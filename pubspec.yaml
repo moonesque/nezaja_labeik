@@ -63,7 +63,9 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/salute_supreme_air.jpg
+    - assets/images/ic_launcher_foreground.png
     - assets/images/cropped_supreme.jpg
+    - assets/text_content/labeiks.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

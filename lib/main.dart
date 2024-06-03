@@ -54,6 +54,12 @@ String formatNumber(int number) {
   return formatter.format(number);
 }
 
+Future<String> loadJsonData() async {
+  String jsonData =
+      await rootBundle.loadString('assets/text_content/labeiks.json');
+  return jsonData;
+}
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -78,30 +84,40 @@ class _HomePageState extends State<HomePage> {
                 image: AssetImage('assets/images/cropped_supreme.jpg'),
                 fit: BoxFit.cover,
               )))),
-      body: ListView.builder(
-        itemCount: 11,
-        itemBuilder: (context, index) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[200], // Slightly gray background color
-              borderRadius: BorderRadius.circular(10), // Rounded corners
-              border: Border.all(color: Colors.grey), // Border outline
-            ),
-            margin: EdgeInsets.all(8), // Margin around the tile
-            child: ListTile(
-              title: Text('لبیک ${formatNumber(index + 1)}'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DetailPage(entryNumber: index + 1),
-                  ),
-                );
-              },
-            ),
-          );
-        },
-      ),
+      body: Stack(children: [
+        Center(
+            child: Image.asset(
+          'assets/images/ic_launcher_foreground.png', // Replace with your image asset path
+          fit: BoxFit.scaleDown,
+          // width: MediaQuery.of(context).size.width,
+          // height: MediaQuery.of(context).size.height,
+        )),
+        ListView.builder(
+          itemCount: 11,
+          itemBuilder: (context, index) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[200]!
+                    .withOpacity(0.7), // Slightly gray background color
+                borderRadius: BorderRadius.circular(5), // Rounded corners
+                border: Border.all(color: Colors.grey), // Border outline
+              ),
+              margin: EdgeInsets.all(6), // Margin around the tile
+              child: ListTile(
+                title: Text('لبیک ${formatNumber(index + 1)}'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailPage(entryNumber: index + 1),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        )
+      ]),
     );
   }
 }
@@ -126,24 +142,44 @@ class DetailPage extends StatelessWidget {
     String textContent = 'لبیک $formattedNumber';
     String imageUrl = 'assets/images/salute_supreme_air.jpg';
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('لبیک $formattedNumber'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.asset(imageUrl),
-            SizedBox(height: 20),
-            Text(
-              textContent,
-              style: TextStyle(fontSize: 20),
+    return FutureBuilder(
+      future: loadJsonData(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> shortInfo = jsonDecode(snapshot.data.toString());
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('لبیک $formattedNumber'),
             ),
-          ],
-        ),
-      ),
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image.asset(imageUrl),
+                  SizedBox(height: 20),
+                  Text(
+                    textContent,
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  Text(
+                    'نام طرح: ${shortInfo["$entryNumber"]["name"]}',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  Text(
+                    'اهداف طرح: ${shortInfo["$entryNumber"]["short_text"]}',
+                    style: TextStyle(fontSize: 20),
+                  )
+                ],
+              ),
+            ),
+          );
+        } else {
+          return Text('Error loading data');
+        }
+      },
     );
   }
 }
