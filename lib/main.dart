@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
 
 void main() {
   runApp(const MyApp());
@@ -77,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                 fit: BoxFit.cover,
               )))),
       body: ListView.builder(
-        itemCount: 31,
+        itemCount: 11,
         itemBuilder: (context, index) {
           return Container(
             decoration: BoxDecoration(
