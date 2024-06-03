@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/services.dart' show rootBundle;
 
 void main() {
@@ -156,21 +157,30 @@ class DetailPage extends StatelessWidget {
             body: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Image.asset(imageUrl),
                   SizedBox(height: 20),
                   Text(
-                    textContent,
-                    style: TextStyle(fontSize: 20),
+                    '«${shortInfo["$entryNumber"]["name"]}»',
+                    style: TextStyle(fontSize: 22, decorationThickness: 6, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'نام طرح: ${shortInfo["$entryNumber"]["name"]}',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  Text(
-                    'اهداف طرح: ${shortInfo["$entryNumber"]["short_text"]}',
-                    style: TextStyle(fontSize: 20),
+                    '${shortInfo["$entryNumber"]["short_text"]}',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        decorationThickness: 6,
+                  )),
+                  MaterialButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FullDetailPage(entryNumber: entryNumber)),
+                      );
+                    },
+                    child: Text('مطالعه', style: TextStyle(fontSize: 20),),
                   )
                 ],
               ),
@@ -180,6 +190,24 @@ class DetailPage extends StatelessWidget {
           return Text('Error loading data');
         }
       },
+    );
+  }
+}
+
+class FullDetailPage extends StatelessWidget {
+  final int entryNumber;
+
+  FullDetailPage({required this.entryNumber});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Full Detail Page'),
+      ),
+      body: Center(
+        child: Text('Entry Number: $entryNumber'),
+      ),
     );
   }
 }
