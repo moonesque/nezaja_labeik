@@ -41,8 +41,7 @@ String formatNumber(int number) {
 }
 
 Future<String> loadJsonData(String jsonPath) async {
-  String jsonData =
-      await rootBundle.loadString(jsonPath);
+  String jsonData = await rootBundle.loadString(jsonPath);
   return jsonData;
 }
 
@@ -386,180 +385,172 @@ class FullDetailPage extends StatefulWidget {
   _FullDetailPageState createState() => _FullDetailPageState();
 }
 
-class _FullDetailPageState extends State<FullDetailPage>
-    with SingleTickerProviderStateMixin {
+class _FullDetailPageState extends State<FullDetailPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  late Future<List<Map<String, dynamic>>> _pagesFuture;
 
-  final List<Map<String, dynamic>> pages = [
-    {
-      'title': 'تدابیر و مستندات',
-      'content':
-          'This is the content of the first page. \n\n• Bullet point 1\n• Bullet point 2\n• Bullet point 3',
-      'image':
-          'assets/images/full_detailed_pages/labeik_1/page_1.jpg', // Add your image path here
-    },
-    {
-      'title': 'Title 2',
-      'content':
-          'This is the content of the second page. \n\n• Bullet point 1\n• Bullet point 2\n• Bullet point 3',
-      'image':
-          'assets/images/full_detailed_pages/labeik_1/page_2.jpg', // Add your image path here
-    },
-    // Add more pages as needed
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // Load JSON data during initialization
+    _pagesFuture = _loadPages();
+  }
+
+  Future<List<Map<String, dynamic>>> _loadPages() async {
+    String jsonString = await loadJsonData('assets/text_content/full_detailed_pages/labeik_1.json');
+    List<dynamic> jsonData = json.decode(jsonString);
+    return List<Map<String, dynamic>>.from(jsonData);
+  }
+
+  Future<String> loadJsonData(String jsonPath) async {
+    String jsonData = await rootBundle.loadString(jsonPath);
+    return jsonData;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'لبیک ${formatNumber(widget.entryNumber)}',
-          style: TextStyle(fontFamily: "Entezar"),
-        ),
-        backgroundColor: const Color(0xFF6B8E23),
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0), // Divider height
-          child: Container(
-            color: Colors.grey, // Divider color
-            height: 1.0, // Divider height
-          ),
-        ),
-      ),
-      body: Stack(
-        children: [
-          PageView.builder(
-            controller: _pageController,
-            itemCount: pages.length,
-            onPageChanged: (index) {
-              setState(() {
-                _currentPage = index;
-              });
-            },
-            itemBuilder: (context, index) {
-              return Container(
-                color: Colors.black
-                    .withOpacity(0.5), // Semi-transparent background
-                child: _buildPageContent(index),
-              );
-            },
-          ),
-          Positioned(
-            bottom: 16,
-            left: 0,
-            right: 0,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (_currentPage > 0)
-                      Container(
-                        color: Colors.black
-                            .withOpacity(0.5), // Semi-transparent background
-                        child: TextButton(
-                          onPressed: () {
-                            _pageController.previousPage(
-                              duration: Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          },
-                          child: Text(
-                            'صفحه قبل',
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: Colors
-                                    .white), // Ensure text color is white for readability
-                          ),
-                        ),
-                      ),
-                    SizedBox(width: 20),
-                    Container(
-                      color: Colors.black
-                          .withOpacity(0.5), // Semi-transparent background
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 5), // Optional padding
-                      child: Text(
-                        'صفحه ${formatNumber(_currentPage + 1)} از ${formatNumber(pages.length)}',
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: Colors
-                                .white), // Ensure text color is white for readability
-                      ),
-                    ),
-                    SizedBox(width: 20),
-                    if (_currentPage < pages.length - 1)
-                      Container(
-                        color: Colors.black
-                            .withOpacity(0.5), // Semi-transparent background
-                        child: TextButton(
-                          onPressed: () {
-                            _pageController.nextPage(
-                              duration: Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          },
-                          child: Text(
-                            'صفحه بعد',
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: Colors
-                                    .white), // Ensure text color is white for readability
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ],
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _pagesFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('No data available'));
+        }
+
+        final List<Map<String, dynamic>> pages = snapshot.data!;
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              'لبیک ${formatNumber(widget.entryNumber)}',
+              style: TextStyle(fontFamily: "Entezar"),
+            ),
+            backgroundColor: const Color(0xFF6B8E23),
+            bottom: PreferredSize(
+              preferredSize: Size.fromHeight(1.0),
+              child: Container(
+                color: Colors.grey,
+                height: 1.0,
+              ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPageContent(int index) {
-    final page = pages[index];
-
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: KenBurnsEffect(
-            imagePath: page['image'],
-          ),
-        ),
-        Positioned.fill(
-          child: Container(
-            color: Colors.black
-                .withOpacity(0.5), // Semi-transparent overlay for readability
-          ),
-        ),
-        SingleChildScrollView(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          body: Stack(
             children: [
-              Text(
-                page['title'],
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white, // Ensure text is readable
+              Positioned.fill(
+                child: KenBurnsEffect(
+                  imagePath: pages[widget.entryNumber]['image'],
                 ),
               ),
-              SizedBox(height: 16),
-              RichText(
-                text: TextSpan(
-                  children: _buildContent(page['content']),
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white), // Ensure text is readable
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                ),
+              ),
+              PageView.builder(
+                controller: _pageController,
+                itemCount: pages.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  return Container(
+                    color: Colors.black.withOpacity(0.5),
+                    child: _buildPageContent(pages, index),
+                  );
+                },
+              ),
+              Positioned(
+                bottom: 16,
+                left: 0,
+                right: 0,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (_currentPage > 0)
+                          Container(
+                            color: Colors.black.withOpacity(0.5),
+                            child: TextButton(
+                              onPressed: () {
+                                _pageController.previousPage(
+                                  duration: Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                              },
+                              child: Text(
+                                'صفحه قبل',
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        SizedBox(width: 20),
+                        Container(
+                          color: Colors.black.withOpacity(0.5),
+                          padding: EdgeInsets.symmetric(horizontal: 5),
+                          child: Text(
+                            'صفحه ${formatNumber(_currentPage + 1)} از ${formatNumber(pages.length)}',
+                            style: TextStyle(fontSize: 16, color: Colors.white),
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                        if (_currentPage < pages.length - 1)
+                          Container(
+                            color: Colors.black.withOpacity(0.5),
+                            child: TextButton(
+                              onPressed: () {
+                                _pageController.nextPage(
+                                  duration: Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                              },
+                              child: Text(
+                                'صفحه بعد',
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.white),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-        ),
-      ],
+        );
+      },
+    );
+  }
+
+  Widget _buildPageContent(List<Map<String, dynamic>> pages, int index) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            pages[index]['title'],
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          SizedBox(height: 16),
+          Text(
+            pages[index]['content'],
+            style: TextStyle(fontSize: 18, color: Colors.white),
+          ),
+        ],
+      ),
     );
   }
 
