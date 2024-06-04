@@ -128,7 +128,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           ListView.builder(
-            itemCount: 11,
+            itemCount: 31,
             itemBuilder: (context, index) {
               return Container(
                 decoration: BoxDecoration(
