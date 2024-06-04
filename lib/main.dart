@@ -362,20 +362,6 @@ class _DetailPageState extends State<DetailPage>
   }
 }
 
-final List<Map<String, dynamic>> pages = [
-  {
-    'title': 'Title 1',
-    'content':
-        'This is the content of the first page. \n\n• Bullet point 1\n• Bullet point 2\n• Bullet point 3',
-  },
-  {
-    'title': 'Title 2',
-    'content':
-        'This is the content of the second page. \n\n• Bullet point 1\n• Bullet point 2\n• Bullet point 3',
-  },
-  // Add more pages as needed
-];
-
 class FullDetailPage extends StatefulWidget {
   final int entryNumber;
 
@@ -398,7 +384,8 @@ class _FullDetailPageState extends State<FullDetailPage> {
   }
 
   Future<List<Map<String, dynamic>>> _loadPages() async {
-    String jsonString = await loadJsonData('assets/text_content/full_detailed_pages/labeik_1.json');
+    String jsonString = await loadJsonData(
+        'assets/text_content/full_detailed_pages/labeik_1.json');
     List<dynamic> jsonData = json.decode(jsonString);
     return List<Map<String, dynamic>>.from(jsonData);
   }
@@ -441,29 +428,32 @@ class _FullDetailPageState extends State<FullDetailPage> {
           body: Stack(
             children: [
               Positioned.fill(
-                child: KenBurnsEffect(
-                  imagePath: pages[widget.entryNumber]['image'],
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: pages.length,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentPage = index;
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    return Stack(
+                      children: [
+                        Positioned.fill(
+                          child: KenBurnsEffect(
+                            imagePath: pages[index]['image'],
+                          ),
+                        ),
+                        Positioned.fill(
+                          child: Container(
+                            color: Colors.black.withOpacity(0.5),
+                          ),
+                        ),
+                        _buildPageContent(pages, index),
+                      ],
+                    );
+                  },
                 ),
-              ),
-              Positioned.fill(
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
-                ),
-              ),
-              PageView.builder(
-                controller: _pageController,
-                itemCount: pages.length,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentPage = index;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  return Container(
-                    color: Colors.black.withOpacity(0.5),
-                    child: _buildPageContent(pages, index),
-                  );
-                },
               ),
               Positioned(
                 bottom: 16,
