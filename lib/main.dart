@@ -271,6 +271,7 @@ class _DetailPageState extends State<DetailPage>
                     ),
                     child: Text(
                       '«${shortInfo["${widget.entryNumber}"]["name"]}»',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -288,6 +289,7 @@ class _DetailPageState extends State<DetailPage>
                     ),
                     child: Text(
                       '${shortInfo["${widget.entryNumber}"]["short_text"]}',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 24,
