@@ -241,9 +241,8 @@ class _DetailPageState extends State<DetailPage>
   @override
   Widget build(BuildContext context) {
     String formattedNumber = formatNumber(widget.entryNumber);
-    String imageUrl =
-        'assets/images/full_detailed_pages/labeik_1/overview.jpg';
-        // 'assets/images/full_detailed_pages/labeik_${widget.entryNumber}/overview.jpg';
+    String imageUrl = 'assets/images/full_detailed_pages/labeik_1/overview.jpg';
+    // 'assets/images/full_detailed_pages/labeik_${widget.entryNumber}/overview.jpg';
 
     return FutureBuilder(
       future: loadJsonData(),
@@ -459,13 +458,13 @@ class _FullDetailPageState extends State<FullDetailPage>
                           );
                         },
                         child: Text(
-                          'Previous',
-                          style: TextStyle(fontSize: 18),
+                          'صفحه قبل',
+                          style: TextStyle(fontSize: 12),
                         ),
                       ),
                     SizedBox(width: 20),
                     Text(
-                      'Page ${_currentPage + 1} of ${pages.length}',
+                      'صفحه ${formatNumber(_currentPage + 1)} از ${formatNumber(pages.length)}',
                       style: TextStyle(fontSize: 16),
                     ),
                     SizedBox(width: 20),
@@ -478,8 +477,8 @@ class _FullDetailPageState extends State<FullDetailPage>
                           );
                         },
                         child: Text(
-                          'Next',
-                          style: TextStyle(fontSize: 18),
+                          'صفحه بعد',
+                          style: TextStyle(fontSize: 12),
                         ),
                       ),
                   ],
