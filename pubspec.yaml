@@ -81,6 +81,7 @@ flutter:
 
     # Text Content
     - assets/text_content/labeiks.json
+    - assets/text_content/full_detailed_pages/labeik_1.json
     # Fonts
     - assets/fonts/arvahonafedah.ttf
     - assets/fonts/B Zar.ttf

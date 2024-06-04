@@ -40,9 +40,9 @@ String formatNumber(int number) {
   return formatter.format(number);
 }
 
-Future<String> loadJsonData() async {
+Future<String> loadJsonData(String jsonPath) async {
   String jsonData =
-      await rootBundle.loadString('assets/text_content/labeiks.json');
+      await rootBundle.loadString(jsonPath);
   return jsonData;
 }
 
@@ -245,7 +245,7 @@ class _DetailPageState extends State<DetailPage>
     // 'assets/images/full_detailed_pages/labeik_${widget.entryNumber}/overview.jpg';
 
     return FutureBuilder(
-      future: loadJsonData(),
+      future: loadJsonData('assets/text_content/labeiks.json'),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
@@ -393,18 +393,18 @@ class _FullDetailPageState extends State<FullDetailPage>
 
   final List<Map<String, dynamic>> pages = [
     {
-      'title': 'Title 1',
+      'title': 'تدابیر و مستندات',
       'content':
           'This is the content of the first page. \n\n• Bullet point 1\n• Bullet point 2\n• Bullet point 3',
       'image':
-          'assets/images/full_detailed_pages/labeik_1/overview.jpg', // Add your image path here
+          'assets/images/full_detailed_pages/labeik_1/page_1.jpg', // Add your image path here
     },
     {
       'title': 'Title 2',
       'content':
           'This is the content of the second page. \n\n• Bullet point 1\n• Bullet point 2\n• Bullet point 3',
       'image':
-          'assets/images/full_detailed_pages/labeik_1/page_5.jpg', // Add your image path here
+          'assets/images/full_detailed_pages/labeik_1/page_2.jpg', // Add your image path here
     },
     // Add more pages as needed
   ];
@@ -437,7 +437,11 @@ class _FullDetailPageState extends State<FullDetailPage>
               });
             },
             itemBuilder: (context, index) {
-              return _buildPageContent(index);
+              return Container(
+                color: Colors.black
+                    .withOpacity(0.5), // Semi-transparent background
+                child: _buildPageContent(index),
+              );
             },
           ),
           Positioned(
@@ -450,35 +454,58 @@ class _FullDetailPageState extends State<FullDetailPage>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (_currentPage > 0)
-                      TextButton(
-                        onPressed: () {
-                          _pageController.previousPage(
-                            duration: Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        child: Text(
-                          'صفحه قبل',
-                          style: TextStyle(fontSize: 12),
+                      Container(
+                        color: Colors.black
+                            .withOpacity(0.5), // Semi-transparent background
+                        child: TextButton(
+                          onPressed: () {
+                            _pageController.previousPage(
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          child: Text(
+                            'صفحه قبل',
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: Colors
+                                    .white), // Ensure text color is white for readability
+                          ),
                         ),
                       ),
                     SizedBox(width: 20),
-                    Text(
-                      'صفحه ${formatNumber(_currentPage + 1)} از ${formatNumber(pages.length)}',
-                      style: TextStyle(fontSize: 16),
+                    Container(
+                      color: Colors.black
+                          .withOpacity(0.5), // Semi-transparent background
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 5), // Optional padding
+                      child: Text(
+                        'صفحه ${formatNumber(_currentPage + 1)} از ${formatNumber(pages.length)}',
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Colors
+                                .white), // Ensure text color is white for readability
+                      ),
                     ),
                     SizedBox(width: 20),
                     if (_currentPage < pages.length - 1)
-                      TextButton(
-                        onPressed: () {
-                          _pageController.nextPage(
-                            duration: Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        child: Text(
-                          'صفحه بعد',
-                          style: TextStyle(fontSize: 12),
+                      Container(
+                        color: Colors.black
+                            .withOpacity(0.5), // Semi-transparent background
+                        child: TextButton(
+                          onPressed: () {
+                            _pageController.nextPage(
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          child: Text(
+                            'صفحه بعد',
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: Colors
+                                    .white), // Ensure text color is white for readability
+                          ),
                         ),
                       ),
                   ],
