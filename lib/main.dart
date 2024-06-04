@@ -241,8 +241,9 @@ class _DetailPageState extends State<DetailPage>
   @override
   Widget build(BuildContext context) {
     String formattedNumber = formatNumber(widget.entryNumber);
-    String imageUrl = 'assets/images/salute_supreme_air.jpg';
-    // 'assets/images/full_detailed_pages/labeik_${widget.entryNumber}.jpg';
+    String imageUrl =
+        'assets/images/full_detailed_pages/labeik_1/overview.jpg';
+        // 'assets/images/full_detailed_pages/labeik_${widget.entryNumber}/overview.jpg';
 
     return FutureBuilder(
       future: loadJsonData(),
@@ -363,23 +364,240 @@ class _DetailPageState extends State<DetailPage>
   }
 }
 
-class FullDetailPage extends StatelessWidget {
+final List<Map<String, dynamic>> pages = [
+  {
+    'title': 'Title 1',
+    'content':
+        'This is the content of the first page. \n\n• Bullet point 1\n• Bullet point 2\n• Bullet point 3',
+  },
+  {
+    'title': 'Title 2',
+    'content':
+        'This is the content of the second page. \n\n• Bullet point 1\n• Bullet point 2\n• Bullet point 3',
+  },
+  // Add more pages as needed
+];
+
+class FullDetailPage extends StatefulWidget {
   final int entryNumber;
 
   FullDetailPage({required this.entryNumber});
 
   @override
+  _FullDetailPageState createState() => _FullDetailPageState();
+}
+
+class _FullDetailPageState extends State<FullDetailPage>
+    with SingleTickerProviderStateMixin {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  final List<Map<String, dynamic>> pages = [
+    {
+      'title': 'Title 1',
+      'content':
+          'This is the content of the first page. \n\n• Bullet point 1\n• Bullet point 2\n• Bullet point 3',
+      'image':
+          'assets/images/full_detailed_pages/labeik_1/overview.jpg', // Add your image path here
+    },
+    {
+      'title': 'Title 2',
+      'content':
+          'This is the content of the second page. \n\n• Bullet point 1\n• Bullet point 2\n• Bullet point 3',
+      'image':
+          'assets/images/full_detailed_pages/labeik_1/page_5.jpg', // Add your image path here
+    },
+    // Add more pages as needed
+  ];
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(
-            'لبیک ${formatNumber(entryNumber)}',
-            style: TextStyle(fontFamily: "Entezar"),
+        title: Text(
+          'لبیک ${formatNumber(widget.entryNumber)}',
+          style: TextStyle(fontFamily: "Entezar"),
+        ),
+        backgroundColor: const Color(0xFF6B8E23),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1.0), // Divider height
+          child: Container(
+            color: Colors.grey, // Divider color
+            height: 1.0, // Divider height
           ),
-          backgroundColor: const Color(0xFF6b8e23)),
-      body: Center(
-        child: Text('محتوای کامل لبیک ${formatNumber(entryNumber)}'),
+        ),
       ),
+      body: Stack(
+        children: [
+          PageView.builder(
+            controller: _pageController,
+            itemCount: pages.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentPage = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              return _buildPageContent(index);
+            },
+          ),
+          Positioned(
+            bottom: 16,
+            left: 0,
+            right: 0,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (_currentPage > 0)
+                      TextButton(
+                        onPressed: () {
+                          _pageController.previousPage(
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        child: Text(
+                          'Previous',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    SizedBox(width: 20),
+                    Text(
+                      'Page ${_currentPage + 1} of ${pages.length}',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SizedBox(width: 20),
+                    if (_currentPage < pages.length - 1)
+                      TextButton(
+                        onPressed: () {
+                          _pageController.nextPage(
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        child: Text(
+                          'Next',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPageContent(int index) {
+    final page = pages[index];
+
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: KenBurnsEffect(
+            imagePath: page['image'],
+          ),
+        ),
+        Positioned.fill(
+          child: Container(
+            color: Colors.black
+                .withOpacity(0.5), // Semi-transparent overlay for readability
+          ),
+        ),
+        SingleChildScrollView(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                page['title'],
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white, // Ensure text is readable
+                ),
+              ),
+              SizedBox(height: 16),
+              RichText(
+                text: TextSpan(
+                  children: _buildContent(page['content']),
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white), // Ensure text is readable
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<TextSpan> _buildContent(String content) {
+    List<TextSpan> spans = [];
+    List<String> lines = content.split('\n');
+    for (String line in lines) {
+      if (line.startsWith('•')) {
+        spans.add(TextSpan(
+          text: '$line\n',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ));
+      } else {
+        spans.add(TextSpan(text: '$line\n'));
+      }
+    }
+    return spans;
+  }
+}
+
+class KenBurnsEffect extends StatefulWidget {
+  final String imagePath;
+
+  KenBurnsEffect({required this.imagePath});
+
+  @override
+  _KenBurnsEffectState createState() => _KenBurnsEffectState();
+}
+
+class _KenBurnsEffectState extends State<KenBurnsEffect>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: Duration(seconds: 10),
+      vsync: this,
+    )..repeat(reverse: true);
+    _animation = Tween<double>(begin: 1.0, end: 1.1).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _animation.value,
+          child: child,
+        );
+      },
+      child: Image.asset(widget.imagePath, fit: BoxFit.cover),
     );
   }
 }

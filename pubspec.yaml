@@ -67,6 +67,18 @@ flutter:
     - assets/images/ic_launcher_foreground.png
     - assets/images/cropped_supreme.jpg
     - assets/images/launch_background.png
+    - assets/images/full_detailed_pages/labeik_1/overview.jpg
+    - assets/images/full_detailed_pages/labeik_1/page_1.jpg
+    - assets/images/full_detailed_pages/labeik_1/page_2.jpg
+    - assets/images/full_detailed_pages/labeik_1/page_3.jpg
+    - assets/images/full_detailed_pages/labeik_1/page_4.jpg
+    - assets/images/full_detailed_pages/labeik_1/page_5.jpg
+    - assets/images/full_detailed_pages/labeik_1/page_6.jpg
+    - assets/images/full_detailed_pages/labeik_1/page_7.jpg
+    - assets/images/full_detailed_pages/labeik_1/page_8.jpg
+    - assets/images/full_detailed_pages/labeik_1/page_9.jpg
+    - assets/images/full_detailed_pages/labeik_1/page_10.jpg
+
     # Text Content
     - assets/text_content/labeiks.json
     # Fonts
