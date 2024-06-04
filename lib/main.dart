@@ -532,12 +532,13 @@ class _FullDetailPageState extends State<FullDetailPage> {
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.white,
+              fontFamily: "Zar"
             ),
           ),
           SizedBox(height: 16),
           Text(
             pages[index]['content'],
-            style: TextStyle(fontSize: 18, color: Colors.white),
+            style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: "Nazanin"),
           ),
         ],
       ),
