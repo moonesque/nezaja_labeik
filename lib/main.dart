@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         Locale('en'),
       ],
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6b8e23)),
         useMaterial3: true,
       ),
       home: SplashScreen(),
@@ -97,6 +97,7 @@ class _HomePageState extends State<HomePage> {
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16.0,
+                                    fontFamily: "Zar",
                                     fontWeight: FontWeight.bold,
                                     shadows: [
                                       Shadow(
@@ -141,7 +142,10 @@ class _HomePageState extends State<HomePage> {
                 margin: EdgeInsets.all(6), // Margin around the tile
                 child: ListTile(
                   title: Text('لبیک ${formatNumber(index + 1)}',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Entezar",
+                          fontSize: 20)),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -251,9 +255,10 @@ class _DetailPageState extends State<DetailPage>
           Map<String, dynamic> shortInfo = jsonDecode(snapshot.data.toString());
           return Scaffold(
             appBar: AppBar(
-              title: Text('لبیک $formattedNumber'),
+              title: Text('لبیک $formattedNumber',
+                  style: TextStyle(fontFamily: "Entezar")),
               backgroundColor:
-                  Colors.greenAccent, // Set the background color here
+                  const Color(0xFF6b8e23), // Set the background color here
             ),
             body: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -274,9 +279,9 @@ class _DetailPageState extends State<DetailPage>
                       '«${shortInfo["${widget.entryNumber}"]["name"]}»',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Entezar"),
                     ),
                   ),
                   SizedBox(height: 10), // Add some space between the texts
@@ -292,9 +297,9 @@ class _DetailPageState extends State<DetailPage>
                       '${shortInfo["${widget.entryNumber}"]["short_text"]}',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24,
-                      ),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                          fontFamily: "Nazanin"),
                     ),
                   ),
                   SizedBox(height: 20),
@@ -310,7 +315,7 @@ class _DetailPageState extends State<DetailPage>
                         ),
                       ),
                       backgroundColor: MaterialStateProperty.all<Color>(
-                          Colors.greenAccent), // Changed to greenAccent
+                          const Color(0xFF6b8e23)), // Changed to greenAccent
                       elevation: MaterialStateProperty.all<double>(10.0),
                       shadowColor:
                           MaterialStateProperty.all<Color>(Colors.black54),
@@ -322,7 +327,7 @@ class _DetailPageState extends State<DetailPage>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Colors.greenAccent,
+                            const Color(0xFF6b8e23),
                             Colors.white24
                           ], // Changed to green gradient
                           begin: Alignment.topCenter,
@@ -367,8 +372,11 @@ class FullDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text('لبیک ${formatNumber(entryNumber)}'),
-          backgroundColor: Colors.greenAccent),
+          title: Text(
+            'لبیک ${formatNumber(entryNumber)}',
+            style: TextStyle(fontFamily: "Entezar"),
+          ),
+          backgroundColor: const Color(0xFF6b8e23)),
       body: Center(
         child: Text('محتوای کامل لبیک ${formatNumber(entryNumber)}'),
       ),
