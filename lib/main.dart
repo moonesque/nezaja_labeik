@@ -237,6 +237,7 @@ class _DetailPageState extends State<DetailPage>
   Widget build(BuildContext context) {
     String formattedNumber = formatNumber(widget.entryNumber);
     String imageUrl = 'assets/images/salute_supreme_air.jpg';
+    // 'assets/images/full_detailed_pages/labeik_${widget.entryNumber}.jpg';
 
     return FutureBuilder(
       future: loadJsonData(),
@@ -363,9 +364,10 @@ class FullDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text('Full Detail Page'), backgroundColor: Colors.greenAccent),
+          title: Text('لبیک ${formatNumber(entryNumber)}'),
+          backgroundColor: Colors.greenAccent),
       body: Center(
-        child: Text('Entry Number: $entryNumber'),
+        child: Text('محتوای کامل لبیک ${formatNumber(entryNumber)}'),
       ),
     );
   }
