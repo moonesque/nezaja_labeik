@@ -51,6 +51,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late Future<Map<String, dynamic>> _labeiksFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _labeiksFuture = loadLabeiksJsonData();
+  }
+
+  Future<Map<String, dynamic>> loadLabeiksJsonData() async {
+    String jsonString =
+        await rootBundle.loadString('assets/text_content/labeiks.json');
+    return jsonDecode(jsonString);
+  }
+
   @override
   Widget build(BuildContext context) {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
@@ -120,49 +134,90 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          Center(
-            child: Image.asset(
-              'assets/images/ic_launcher_foreground.png', // Replace with your image asset path
-              fit: BoxFit.scaleDown,
-            ),
-          ),
-          ListView.builder(
-            itemCount: 31,
-            itemBuilder: (context, index) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[200]!
-                      .withOpacity(0.7), // Slightly gray background color
-                  borderRadius: BorderRadius.circular(5), // Rounded corners
-                  border: Border.all(color: Colors.grey), // Border outline
-                ),
-                margin: EdgeInsets.all(6), // Margin around the tile
-                child: ListTile(
-                  title: Text('لبیک ${formatNumber(index + 1)}',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "Entezar",
-                          fontSize: 20)),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DetailPage(entryNumber: index + 1),
-                      ),
-                    );
-                  },
-                ),
-              );
-            },
-          ),
-        ],
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: _labeiksFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData) {
+              return Center(child: Text('No data available'));
+            }
+            Map<String, dynamic> labeiks = snapshot.data!;
+            return ListView.builder(
+              itemCount: 31,
+              itemBuilder: (context, index) {
+                int entryNumber = index + 1;
+                String shortInfo = labeiks["$entryNumber"]["short_text"] ?? '';
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200]!
+                        .withOpacity(0.7), // Slightly gray background color
+                    borderRadius: BorderRadius.circular(5), // Rounded corners
+                    border: Border.all(color: Colors.grey), // Border outline
+                  ),
+                  margin: EdgeInsets.all(6), // Margin around the tile
+                  child: ListTile(
+                    title: Row(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            'لبیک ${formatNumber(entryNumber)}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "Entezar",
+                              fontSize: 20,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: Container(
+                            constraints: BoxConstraints(
+                                maxWidth:
+                                    200), // Set max width for center alignment
+                            child: Center(
+                              child: Text(
+                                shortInfo,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  fontFamily: "Nazanin",
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              DetailPage(entryNumber: entryNumber),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            );
+          } else {
+            return Center(child: Text('Error loading data'));
+          }
+        },
       ),
     );
   }
 }
+
 
 class DetailPage extends StatefulWidget {
   final int entryNumber;
