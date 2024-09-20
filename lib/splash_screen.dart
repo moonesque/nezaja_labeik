@@ -12,7 +12,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 2), () {
+    Timer(Duration(seconds: 5), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
             builder: (_) =>
@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
       child: FittedBox(
         fit: BoxFit.cover,
         child: Image.asset(
-            'assets/images/launch_background.png'), // Ensure this matches your asset
+            'assets/images/launch_background_2.png'), // Ensure this matches your asset
       ),
     ));
   }

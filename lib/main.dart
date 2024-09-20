@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'dart:async';
+import 'dart:ui' as ui;
 import 'package:flutter/services.dart' show rootBundle;
 import 'splash_screen.dart'; // Import the splash screen
 
@@ -126,6 +127,20 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          color: Colors.black.withOpacity(0),
+                          width: double.infinity,
+                          child: Text(
+                            '',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white, fontFamily: "Nazanin"),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -134,90 +149,134 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: _labeiksFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData) {
-              return Center(child: Text('No data available'));
-            }
-            Map<String, dynamic> labeiks = snapshot.data!;
-            return ListView.builder(
-              itemCount: 31,
-              itemBuilder: (context, index) {
-                int entryNumber = index + 1;
-                String shortInfo = labeiks["$entryNumber"]["short_text"] ?? '';
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200]!
-                        .withOpacity(0.7), // Slightly gray background color
-                    borderRadius: BorderRadius.circular(5), // Rounded corners
-                    border: Border.all(color: Colors.grey), // Border outline
-                  ),
-                  margin: EdgeInsets.all(6), // Margin around the tile
-                  child: ListTile(
-                    title: Row(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            'لبیک ${formatNumber(entryNumber)}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontFamily: "Entezar",
-                              fontSize: 20,
-                              color: Colors.black,
-                            ),
-                          ),
+      body: Column(
+        children: [
+          Expanded(
+            child: FutureBuilder<Map<String, dynamic>>(
+              future: _labeiksFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData) {
+                    return Center(child: Text('No data available'));
+                  }
+                  Map<String, dynamic> labeiks = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: 31,
+                    itemBuilder: (context, index) {
+                      int entryNumber = index + 1;
+                      String shortInfo =
+                          labeiks["$entryNumber"]["short_text"] ?? '';
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200]!.withOpacity(
+                              0.7), // Slightly gray background color
+                          borderRadius:
+                              BorderRadius.circular(5), // Rounded corners
+                          border:
+                              Border.all(color: Colors.grey), // Border outline
                         ),
-                        SizedBox(width: 16),
-                        Expanded(
-                          child: Container(
-                            constraints: BoxConstraints(
-                                maxWidth:
-                                    200), // Set max width for center alignment
-                            child: Center(
-                              child: Text(
-                                shortInfo,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  fontFamily: "Nazanin",
-                                  color: Colors.black,
+                        margin: EdgeInsets.all(6), // Margin around the tile
+                        child: ListTile(
+                          title: Row(
+                            children: [
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  'لبیک ${formatNumber(entryNumber)}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: "Entezar",
+                                    fontSize: 20,
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
-                            ),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: Container(
+                                  constraints: BoxConstraints(
+                                      maxWidth:
+                                          200), // Set max width for center alignment
+                                  child: Center(
+                                    child: Text(
+                                      shortInfo,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        fontFamily: "Nazanin",
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              DetailPage(entryNumber: entryNumber),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    DetailPage(entryNumber: entryNumber),
+                              ),
+                            );
+                          },
                         ),
                       );
                     },
-                  ),
-                );
+                  );
+                } else {
+                  return Center(child: Text('Error loading data'));
+                }
               },
-            );
-          } else {
-            return Center(child: Text('Error loading data'));
-          }
-        },
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.all(8),
+            color: Colors.black.withOpacity(0.3),
+            width: double.infinity,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Flexible(
+                //   child: Image.asset(
+                //     'assets/images/bazresi.png',
+                //     height: 10,
+                //     fit: BoxFit.contain,
+                //   ),
+                // ),
+                // SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    'تهیه شده در مد بازرسی و ایمنی ف آما و پش مرکز نزاجا (دبیرخانه طرح های لبیک)',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: "Nazanin",
+                    ),
+                  ),
+                ),
+                // SizedBox(width: 8),
+                // Flexible(
+                //   child: Image.asset(
+                //     'assets/images/famaposh.png',
+                //     height: 10,
+                //     fit: BoxFit.contain,
+                //   ),
+                // ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
 }
-
 
 class DetailPage extends StatefulWidget {
   final int entryNumber;
@@ -296,7 +355,6 @@ class _DetailPageState extends State<DetailPage>
   Widget build(BuildContext context) {
     String formattedNumber = formatNumber(widget.entryNumber);
     String imageUrl = 'assets/images/full_detailed_pages/labeik_1/overview.jpg';
-    // 'assets/images/full_detailed_pages/labeik_${widget.entryNumber}/overview.jpg';
 
     return FutureBuilder(
       future: loadJsonData('assets/text_content/labeiks.json'),
@@ -314,97 +372,145 @@ class _DetailPageState extends State<DetailPage>
               backgroundColor:
                   const Color(0xFF6b8e23), // Set the background color here
             ),
-            body: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset(imageUrl),
-                  SizedBox(height: 20),
-                  Container(
-                    padding: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.grey
-                          .withOpacity(0.7), // Semi-transparent gray background
-                      borderRadius:
-                          BorderRadius.circular(10), // Rounded corners
-                    ),
-                    child: Text(
-                      '«${shortInfo["${widget.entryNumber}"]["name"]}»',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "Entezar"),
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset(imageUrl),
+                        SizedBox(height: 20),
+                        Container(
+                          padding: EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.withOpacity(
+                                0.7), // Semi-transparent gray background
+                            borderRadius:
+                                BorderRadius.circular(10), // Rounded corners
+                          ),
+                          child: Text(
+                            '«${shortInfo["${widget.entryNumber}"]["name"]}»',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: "Entezar"),
+                          ),
+                        ),
+                        SizedBox(
+                            height: 10), // Add some space between the texts
+                        Container(
+                          padding: EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.withOpacity(
+                                0.7), // Semi-transparent gray background
+                            borderRadius:
+                                BorderRadius.circular(10), // Rounded corners
+                          ),
+                          child: Text(
+                            '${shortInfo["${widget.entryNumber}"]["short_text"]}',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                                fontFamily: "Nazanin"),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: _navigate,
+                          style: ButtonStyle(
+                            padding: MaterialStateProperty.all<EdgeInsets>(
+                              EdgeInsets.symmetric(
+                                  vertical: 16.0, horizontal: 24.0),
+                            ),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                            ),
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                const Color(
+                                    0xFF6b8e23)), // Changed to greenAccent
+                            elevation: MaterialStateProperty.all<double>(10.0),
+                            shadowColor: MaterialStateProperty.all<Color>(
+                                Colors.black54),
+                            textStyle: MaterialStateProperty.all<TextStyle>(
+                              TextStyle(fontSize: 20),
+                            ),
+                          ),
+                          child: Ink(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  const Color(0xFF6b8e23),
+                                  Colors.white24
+                                ], // Changed to green gradient
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: ValueListenableBuilder<int>(
+                                valueListenable: _countdownNotifier,
+                                builder: (context, countdownValue, child) {
+                                  return Text(
+                                    'مطالعه (${formatNumber(countdownValue)})',
+                                    style: TextStyle(color: Colors.black),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 10), // Add some space between the texts
-                  Container(
-                    padding: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.grey
-                          .withOpacity(0.7), // Semi-transparent gray background
-                      borderRadius:
-                          BorderRadius.circular(10), // Rounded corners
-                    ),
-                    child: Text(
-                      '${shortInfo["${widget.entryNumber}"]["short_text"]}',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                          fontFamily: "Nazanin"),
-                    ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(8),
+                  color: Colors.black.withOpacity(0.3),
+                  width: double.infinity,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Commented out images to focus on text, uncomment if needed
+                      // Flexible(
+                      //   child: Image.asset(
+                      //     'assets/images/bazresi.png',
+                      //     height: 10,
+                      //     fit: BoxFit.contain,
+                      //   ),
+                      // ),
+                      // SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          'تهیه شده در مد بازرسی و ایمنی ف آما و پش مرکز نزاجا (دبیرخانه طرح های لبیک)',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: "Nazanin",
+                          ),
+                        ),
+                      ),
+                      // SizedBox(width: 8),
+                      // Flexible(
+                      //   child: Image.asset(
+                      //     'assets/images/famaposh.png',
+                      //     height: 10,
+                      //     fit: BoxFit.contain,
+                      //   ),
+                      // ),
+                    ],
                   ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _navigate,
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                        EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-                      ),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ),
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          const Color(0xFF6b8e23)), // Changed to greenAccent
-                      elevation: MaterialStateProperty.all<double>(10.0),
-                      shadowColor:
-                          MaterialStateProperty.all<Color>(Colors.black54),
-                      textStyle: MaterialStateProperty.all<TextStyle>(
-                        TextStyle(fontSize: 20),
-                      ),
-                    ),
-                    child: Ink(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            const Color(0xFF6b8e23),
-                            Colors.white24
-                          ], // Changed to green gradient
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: ValueListenableBuilder<int>(
-                          valueListenable: _countdownNotifier,
-                          builder: (context, countdownValue, child) {
-                            return Text(
-                              'مطالعه (${formatNumber(countdownValue)})',
-                              style: TextStyle(color: Colors.black),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         } else {
@@ -426,16 +532,33 @@ class FullDetailPage extends StatefulWidget {
   _FullDetailPageState createState() => _FullDetailPageState();
 }
 
-class _FullDetailPageState extends State<FullDetailPage> {
+class _FullDetailPageState extends State<FullDetailPage>
+    with SingleTickerProviderStateMixin {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   late Future<List<Map<String, dynamic>>> _pagesFuture;
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
-    // Load JSON data during initialization
     _pagesFuture = _loadPages();
+
+    // Initialize the fade animation controller and animation
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    )..forward();
+    _fadeAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(_fadeController);
+  }
+
+  @override
+  void dispose() {
+    // Dispose the fade animation controller
+    _fadeController.dispose();
+    super.dispose();
   }
 
   Future<List<Map<String, dynamic>>> _loadPages() async {
@@ -483,40 +606,69 @@ class _FullDetailPageState extends State<FullDetailPage> {
           body: Stack(
             children: [
               Positioned.fill(
-                child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: pages.length,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentPage = index;
-                    });
-                  },
-                  itemBuilder: (context, index) {
-                    return Stack(
-                      children: [
-                        Positioned.fill(
-                          child: KenBurnsEffect(
-                            imagePath: pages[index]['image'],
-                          ),
-                        ),
-                        Positioned.fill(
-                          child: Container(
-                            color: Colors.black.withOpacity(0.5),
-                          ),
-                        ),
-                        _buildPageContent(pages, index),
-                      ],
-                    );
-                  },
+                child: KenBurnsEffect(
+                  imagePath: pages[_currentPage]['image'],
                 ),
               ),
-              Positioned(
-                bottom: 16,
-                left: 0,
-                right: 0,
-                child: Column(
-                  children: [
-                    Row(
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                ),
+              ),
+              Column(
+                children: [
+                  Expanded(
+                    child: PageView.builder(
+                      controller: _pageController,
+                      itemCount: pages.length,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentPage = index;
+                          _fadeController.reset();
+                          _fadeController.forward();
+                        });
+                      },
+                      itemBuilder: (context, index) {
+                        return FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  color: Colors.black.withOpacity(0.5),
+                                  child: Text(
+                                    pages[index]['title'],
+                                    style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        fontFamily: "Zar"),
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                                Container(
+                                  color: Colors.black.withOpacity(0.5),
+                                  child: Text(
+                                    pages[index]['content'],
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                        fontFamily: "Nazanin"),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         if (_currentPage > 0)
@@ -525,11 +677,11 @@ class _FullDetailPageState extends State<FullDetailPage> {
                             child: TextButton(
                               onPressed: () {
                                 _pageController.previousPage(
-                                  duration: Duration(milliseconds: 300),
+                                  duration: const Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
                                 );
                               },
-                              child: Text(
+                              child: const Text(
                                 'صفحه قبل',
                                 style: TextStyle(
                                     fontSize: 12, color: Colors.white),
@@ -539,10 +691,11 @@ class _FullDetailPageState extends State<FullDetailPage> {
                         SizedBox(width: 20),
                         Container(
                           color: Colors.black.withOpacity(0.5),
-                          padding: EdgeInsets.symmetric(horizontal: 5),
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
                           child: Text(
                             'صفحه ${formatNumber(_currentPage + 1)} از ${formatNumber(pages.length)}',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
+                            style: const TextStyle(
+                                fontSize: 16, color: Colors.white),
                           ),
                         ),
                         SizedBox(width: 20),
@@ -552,11 +705,11 @@ class _FullDetailPageState extends State<FullDetailPage> {
                             child: TextButton(
                               onPressed: () {
                                 _pageController.nextPage(
-                                  duration: Duration(milliseconds: 300),
+                                  duration: const Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
                                 );
                               },
-                              child: Text(
+                              child: const Text(
                                 'صفحه بعد',
                                 style: TextStyle(
                                     fontSize: 12, color: Colors.white),
@@ -565,8 +718,8 @@ class _FullDetailPageState extends State<FullDetailPage> {
                           ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -575,45 +728,9 @@ class _FullDetailPageState extends State<FullDetailPage> {
     );
   }
 
-  Widget _buildPageContent(List<Map<String, dynamic>> pages, int index) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            pages[index]['title'],
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              fontFamily: "Zar"
-            ),
-          ),
-          SizedBox(height: 16),
-          Text(
-            pages[index]['content'],
-            style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: "Nazanin"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  List<TextSpan> _buildContent(String content) {
-    List<TextSpan> spans = [];
-    List<String> lines = content.split('\n');
-    for (String line in lines) {
-      if (line.startsWith('•')) {
-        spans.add(TextSpan(
-          text: '$line\n',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ));
-      } else {
-        spans.add(TextSpan(text: '$line\n'));
-      }
-    }
-    return spans;
+  String formatNumber(int number) {
+    final NumberFormat formatter = NumberFormat.decimalPattern('fa_IR');
+    return formatter.format(number);
   }
 }
 
@@ -635,13 +752,11 @@ class _KenBurnsEffectState extends State<KenBurnsEffect>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: Duration(seconds: 10),
+      duration: const Duration(seconds: 10),
       vsync: this,
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 1.0, end: 1.1).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
+    _animation = Tween<double>(begin: 1.0, end: 1.1)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
